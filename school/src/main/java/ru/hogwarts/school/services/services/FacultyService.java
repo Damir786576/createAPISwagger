@@ -1,9 +1,12 @@
-package ru.hogwarts.school.services;
+package ru.hogwarts.school.services.services;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FacultyService {
@@ -28,5 +31,16 @@ public class FacultyService {
 
     public Faculty removeFaculty(long id) {
         return facultys.remove(id);
+    }
+
+    public Collection<Faculty> getAllFaculty() {
+        return facultys.values();
+    }
+
+    public List<Faculty> filterColourbyStudent(String colour) {
+        return facultys.values().stream()
+                .filter(faculty -> colour.equalsIgnoreCase(faculty.getColor()))
+                .collect(Collectors.toList());
+
     }
 }

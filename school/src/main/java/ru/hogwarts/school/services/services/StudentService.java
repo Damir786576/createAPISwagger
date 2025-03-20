@@ -1,4 +1,4 @@
-package ru.hogwarts.school.services;
+package ru.hogwarts.school.services.services;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
