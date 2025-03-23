@@ -58,6 +58,11 @@ public class FacultyController {
         List<Faculty> filteredFaculties = facultyService.filterColourbyStudent(color);
         return ResponseEntity.ok(filteredFaculties);
     }
+
+    @GetMapping("/get")
+    public List<Faculty> findByNameOrColourIgnoreCase(@RequestParam("name") String name, @RequestParam("colour") String colour) {
+        return facultyService.findByNameOrColourIgnoreCase(name, colour);
+    }
 }
 
 

@@ -45,4 +45,8 @@ public class StudentService {
                 .filter(student -> student.getAge() == age)
                 .collect(Collectors.toList());
     }
+
+    public List<Student> findByAgeBetween(Integer min, Integer max) {
+        return studentRepository.findByAgeBetween(min, max);
+    }
 }
