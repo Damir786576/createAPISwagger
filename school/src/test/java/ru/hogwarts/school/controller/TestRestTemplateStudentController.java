@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.StudentRepository;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,6 +24,11 @@ public class TestRestTemplateStudentController {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @BeforeEach
+    void setUp() {
+        studentRepository.deleteAll();
+    }
 
 
     @Test

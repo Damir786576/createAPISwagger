@@ -21,7 +21,7 @@ public class FacultyService {
     }
 
     public Faculty findFaculty(long id) {
-        return facultyRepository.findById(id).get();
+        return facultyRepository.findById(id).orElse(null);
 
     }
 
@@ -39,7 +39,7 @@ public class FacultyService {
 
     public List<Faculty> filterColourbyStudent(String colour) {
         return facultyRepository.findAll().stream()
-                .filter(faculty -> colour.equalsIgnoreCase(faculty.getColor()))
+                .filter(faculty -> colour.equalsIgnoreCase(faculty.getColour()))
                 .collect(Collectors.toList());
     }
 
