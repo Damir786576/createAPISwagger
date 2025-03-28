@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repositories.FacultyRepository;
 
 import java.util.List;
 
@@ -25,13 +26,20 @@ public class TestRestTemplateFacultyController {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private FacultyRepository facultyRepository;
+
+    @BeforeEach
+    void setUp() {
+        facultyRepository.deleteAll();
+    }
 
     @Test
     void testGetFaculty() {
-        Faculty faculty = new Faculty(1L, "Gryffindor", "Red");
-        restTemplate.postForEntity(baseUrl(), faculty, Faculty.class);
+        Faculty faculty = new Faculty(null, "Gryffindor", "Red");
+        Faculty savedFaculty = restTemplate.postForEntity(baseUrl(), faculty, Faculty.class).getBody();
 
-        ResponseEntity<Faculty> response = restTemplate.getForEntity(baseUrl() + "/1", Faculty.class);
+        ResponseEntity<Faculty> response = restTemplate.getForEntity(baseUrl() + "/" + savedFaculty.getId(), Faculty.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Gryffindor", response.getBody().getName());
@@ -49,23 +57,24 @@ public class TestRestTemplateFacultyController {
 
     @Test
     void testPutFaculty() {
-        Faculty faculty = new Faculty(1L, "Slytherin", "Green");
-        restTemplate.postForEntity(baseUrl(), faculty, Faculty.class);
+        Faculty faculty = new Faculty(null, "Slytherin", "Green");
+        Faculty savedFaculty = restTemplate.postForEntity(baseUrl(), faculty, Faculty.class).getBody();
 
-        Faculty updatedFaculty = new Faculty(1L, "Slytherin Updated", "Green");
+        Faculty updatedFaculty = new Faculty(savedFaculty.getId(), "Slytherin Updated", "Green");
         HttpEntity<Faculty> request = new HttpEntity<>(updatedFaculty);
         ResponseEntity<Faculty> response = restTemplate.exchange(baseUrl(), HttpMethod.PUT, request, Faculty.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals("Slytherin Updated", response.getBody().getName());
     }
 
     @Test
     void testDeleteFaculty() {
-        Faculty faculty = new Faculty(1L, "Ravenclaw", "Blue");
-        restTemplate.postForEntity(baseUrl(), faculty, Faculty.class);
+        Faculty faculty = new Faculty(null, "Ravenclaw", "Blue");
+        Faculty savedFaculty = restTemplate.postForEntity(baseUrl(), faculty, Faculty.class).getBody();
 
-        ResponseEntity<Void> response = restTemplate.exchange(baseUrl() + "/1", HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange(baseUrl() + "/" + savedFaculty.getId(), HttpMethod.DELETE, null, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -76,9 +85,9 @@ public class TestRestTemplateFacultyController {
         restTemplate.postForEntity(baseUrl(), faculty1, Faculty.class);
         restTemplate.postForEntity(baseUrl(), faculty2, Faculty.class);
 
-        ResponseEntity<List> response = restTemplate.getForEntity(baseUrl(), List.class);
+        ResponseEntity<Faculty[]> response = restTemplate.getForEntity(baseUrl() + "/all", Faculty[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().size() >= 2);
+        assertEquals(2, response.getBody().length);
     }
 
     @Test
@@ -86,9 +95,9 @@ public class TestRestTemplateFacultyController {
         Faculty faculty = new Faculty(null, "Hufflepuff", "Yellow");
         restTemplate.postForEntity(baseUrl(), faculty, Faculty.class);
 
-        ResponseEntity<List> response = restTemplate.getForEntity(baseUrl() + "/filter?color=Yellow", List.class);
+        ResponseEntity<Faculty[]> response = restTemplate.getForEntity(baseUrl() + "/filter?color=Yellow", Faculty[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().isEmpty());
+        assertFalse(response.getBody().length == 0);
     }
 
     @Test
@@ -96,11 +105,12 @@ public class TestRestTemplateFacultyController {
         Faculty faculty = new Faculty(null, "Ravenclaw", "Blue");
         restTemplate.postForEntity(baseUrl(), faculty, Faculty.class);
 
-        ResponseEntity<List> response = restTemplate.getForEntity(baseUrl() + "/get?name=Ravenclaw&colour=Blue", List.class);
+        ResponseEntity<Faculty[]> response = restTemplate.getForEntity(baseUrl() + "/get?name=Ravenclaw&colour=Blue", Faculty[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertFalse(response.getBody().isEmpty());
+        assertFalse(response.getBody().length == 0);
     }
+
     private String baseUrl() {
-        return "http://localhost:" + port + "/student";
+        return "http://localhost:" + port + "/faculty";
     }
 }

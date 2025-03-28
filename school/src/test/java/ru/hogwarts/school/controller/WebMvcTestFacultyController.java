@@ -72,7 +72,7 @@ public class WebMvcTestFacultyController {
         List<Faculty> faculties = List.of(new Faculty(1L, "Gryffindor", "Red"));
         when(facultyService.getAllFaculty()).thenReturn(faculties);
 
-        mockMvc.perform(get("/faculty"))
+        mockMvc.perform(get("/faculty/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Gryffindor"));
     }
